@@ -18,6 +18,7 @@ void disegnaSchermo(Giocatore *g, Ostacolo ostacoli[]) {
             schermo[i][j] = ' ';
         }
         schermo[i][NUM_CORSIE * 4 + 1] = '\0'; // Termina la stringa
+        
     }
 
     // Disegna i bordi della strada
