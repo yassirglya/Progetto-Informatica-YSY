@@ -16,6 +16,7 @@ typedef struct {
     int velocita;
 } Giocatore;
 
+
 typedef struct {
     int corsia;
     int riga;
