@@ -1,101 +1,116 @@
-irt#include "game.h"
-#include "obstacles.h"
-#include <stdio.h>
+#include "game.h"
 
-// Prototipo della nuova funzione di collisione
-void controllaCollisioni(Giocatore *giocatore);
+#ifdef _WIN32
+#include <conio.h>
+#else
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
+int _kbhit(void) {
+    struct termios oldt, newt;
+    int ch;
+    int oldf;
 
-// Funzione per inizializzare il gioco e il giocatore
-void inizializza_gioco(Giocatore *giocatore) {
-    srand(time(NULL));
-    inizializza_giocatore(giocatore);
-    inizializza_ostacoli(); // Inizializziamo anche gli ostacoli
-}
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
 
-// Gestisce l'aggiornamento della logica di gioco
-void aggiorna_logica(StatoGioco *statoCorrente, Giocatore *giocatore) {
-    if (giocatore->vivo) {
-        gameLoop(giocatore);
-    } else {
-        *statoCorrente = GAMEOVER;
+    ch = getchar();
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    fcntl(STDIN_FILENO, F_SETFL, oldf);
+
+    if(ch != EOF) {
+        ungetc(ch, stdin);
+        return 1;
     }
-}
 
-// Gestisce il disegno di tutti gli elementi a schermo
-void disegna_schermo(StatoGioco statoCorrente, const Giocatore *giocatore) {
-    // Pulisce lo schermo
+    return 0;
+}
+int _getch() {
+    return getchar();
+}
+#endif
+
+// Funzione per la schermata di Game Over
+void mostraGameOver(StatoGioco *statoCorrente, const Giocatore *giocatore) {
     #ifdef _WIN32
         system("cls");
     #else
-        system("clear");
+        printf("\033[H\033[J");
     #endif
 
-    switch (statoCorrente) {
-        case MENU:
-            break; // Il menu viene stampato altrove
-        case GIOCO:
-            disegna_ostacoli();
-            disegna_giocatore(giocatore); // Disegniamo il giocatore dopo gli ostacoli
-            break;
-        case GAMEOVER:
-            printf("\n\n          GAME OVER          \n\n");
-            printf("Punteggio finale: %d\n", giocatore->punteggio);
-            printf("Km percorsi: %ld\n", giocatore->km);
-            // Qui si potrebbe attendere un input per tornare al menu
-            break;
-        default:
-            break;
-    }
-}
+    printf("\n\n");
+    printf("  GGGGGGGGGGGGG                  AAA              MMMMMMMM               MMMMMMMM EEEEEEEEEEEEEEEEEEEEEE     OOOOOOOOO     VVVVVVVV           VVVVVVVV EEEEEEEEEEEEEEEEEEEEEE RRRRRRRRRRRRRRRRR   \n");
+    printf(" GGG::::::::::::G               AAAAA             M:::::::M             M:::::::M E::::::::::::::::::::E   OO:::::::::OO   V::::::V           V::::::V E::::::::::::::::::::E R::::::::::::::::R  \n");
+    printf("G:::::GGGGGGGG::::G            A:::::A            M::::::::M           M::::::::M E::::::::::::::::::::E OO:::::::::::::OO V::::::V           V::::::V E::::::::::::::::::::E R::::::RRRRRR:::::R \n");
+    printf("G:::::G     GGGGGG           A:::::::A           M:::::::::M         M:::::::::M EE::::::EEEEEEEEE     O:::::OOO:::::O      V::::::V         V::::::V  EE::::::EEEEEEEEE    RR:::::R     R:::::R\n");
+    printf("G:::::G                      A:::::::::A          M::::::::::M       M::::::::::M   E:::::E               O::::O   O::::O   V:::::V       V:::::V      E:::::E              R:::::R     R:::::R\n");
+    printf("G:::::G    GGGGGGGGGG       A:::::A:::::A         M:::::::::::M     M:::::::::::M   E:::::E               O::::O   O::::O    V:::::V     V:::::V       E:::::E              R:::::R     R:::::R\n");
+    printf("G:::::G    G::::::::G      A:::::A A:::::A        M:::::::M::::M   M::::M:::::::M   E::::::EEEEEEEEEE     O::::O   O::::O     V:::::V   V:::::V        E::::::EEEEEEEEEE    R:::::RRRRRR:::::R \n");
+    printf("G:::::G    GGGGG::::G     A:::::A   A:::::A       M::::::M M::::M M::::M M::::::M   E:::::::::::::::E     O::::O   O::::O      V:::::V V:::::V         E:::::::::::::::E    R:::::::::::::RR  \n");
+    printf("G:::::G        G::::G    A:::::A     A:::::A      M::::::M  M::::M::::M  M::::::M   E:::::::::::::::E     O::::O   O::::O       V:::::V:::::V          E:::::::::::::::E    R:::::RRRRRR:::::R \n");
+    printf("G:::::G    G GGG::::G   A:::::AAAAAAAAA:::::A     M::::::M   M:::::::M   M::::::M   E::::::EEEEEEEEEE     O::::O   O::::O        V:::::::::V           E::::::EEEEEEEEEE    R:::::R     R:::::R\n");
+    printf("G:::::G    G:::::G    A:::::::::::::::::::::A    M::::::M    M:::::M    M::::::M   E:::::E               O::::O   O::::O         V:::::::V             E:::::E              R:::::R     R:::::R\n");
+    printf("G:::::G     GGGGGG   A:::::A         A:::::A   M::::::M     MMMMM     M::::::M EE::::::EEEEEEEEEEE     O:::::OOO:::::O          V:::::V                EE::::::EEEEEEEEEEE   RR:::::R     R:::::R\n");
+    printf("G:::::GGGGGGGG::::G  A:::::A           A:::::A  M::::::M               M::::::M E::::::::::::::::::::E OO:::::::::::::OO           V:::V              E::::::::::::::::::::E R::::::R     R:::::R\n");
+    printf(" GGG::::::::::::G A:::::A             A:::::A M::::::M               M::::::M E::::::::::::::::::::E   OO:::::::::OO              V:V                 E::::::::::::::::::::E R::::::R     R:::::R\n");
+    printf("  GGGGGGGGGGGG    AAAAAAA               AAAAAAAMMMMMMMM               MMMMMMMM EEEEEEEEEEEEEEEEEEEEEE     OOOOOOOOO                 V                 EEEEEEEEEEEEEEEEEEEEEE RRRRRRRR     RRRRRRR\n");
+    printf("\n\n");
 
-// Menu principale
-void menuPrincipale(StatoGioco *statoCorrente) {
-    printf("========== GIOCO DI CORSA ==========\n");
-    printf("1. Inizia Partita\n2. Record\n3. Esci\n");
-    printf("Scelta: ");
+    printf("\tRecord di Chilometri: %ld\n\n", giocatore->km);
+    printf("\tPremi 'R' per rigiocare o 'M' per tornare al menu principale.\n");
 
-    int scelta;
-    if (scanf("%d", &scelta) == 1) {
-        switch (scelta) {
-            case 1:
-                *statoCorrente = GIOCO;
-                inizializza_gioco(NULL); // Resetta lo stato per una nuova partita
-                break;
-            case 2: *statoCorrente = RECORD; break;
-            case 3: exit(0); break;
+    char scelta = ' ';
+    while (scelta != 'r' && scelta != 'R' && scelta != 'm' && scelta != 'M') {
+        if (_kbhit()) {
+            scelta = _getch();
         }
     }
-}
 
-// Loop di gioco principale
-void gameLoop(Giocatore *giocatore) {
-    // 1. Aggiorna la posizione degli ostacoli
-    aggiorna_ostacoli();
-
-    // 2. Controlla le collisioni
-    controllaCollisioni(giocatore);
-
-    // 3. (Futuro) Leggi input del giocatore
-
-    // 4. (Futuro) Aggiorna punteggio e km
-    if (giocatore->vivo) {
-        giocatore->km++;
-        giocatore->punteggio += 10; // Esempio
+    if (scelta == 'r' || scelta == 'R') {
+        *statoCorrente = GIOCO;
+    } else {
+        *statoCorrente = MENU;
     }
 }
 
-// Controlla se il giocatore ha colpito un ostacolo.
-void controllaCollisioni(Giocatore *giocatore) {
-    const Ostacolo* ostacoli = get_ostacoli(); // Ottieni l'array di ostacoli
+void gameLoop(StatoGioco *statoCorrente, Giocatore *giocatore) {
+    inizializza_giocatore(giocatore);
+    inizializza_ostacoli();
 
-    for (int i = 0; i < MAX_OSTACOLI; ++i) {
-        // Verifica solo gli ostacoli attivi
-        if (ostacoli[i].riga == RIGA_GIOCATORE) { // L'ostacolo è alla stessa 'altezza' del giocatore
-            if (ostacoli[i].corsia == giocatore->corsia) { // L'ostacolo è nella stessa corsia del giocatore
-                giocatore->vivo = 0; // Collisione! Il giocatore non è più vivo.
-                // (Opzionale) Aggiungi un suono o un effetto visivo qui
-                break; // Inutile controllare altri ostacoli
+    while (*statoCorrente == GIOCO) {
+        if (giocatore->vivo) {
+            gestisciInput(giocatore);
+            aggiorna_ostacoli();
+
+            // Controllo collisioni
+            const Ostacolo *ostacoli = get_ostacoli();
+            for (int i = 0; i < MAX_OSTACOLI; i++) {
+                if (ostacoli[i].riga == RIGA_GIOCATORE && ostacoli[i].corsia == giocatore->corsia) {
+                    giocatore->vivo = 0; // Il giocatore è morto!
+                    break;
+                }
             }
+
+            if (giocatore->vivo) {
+                 giocatore->km++; // Incrementa i km
+            }
+            
+            disegnaSchermo(giocatore, get_ostacoli());
+
+            // Rallenta il gioco per renderlo giocabile
+            #ifdef _WIN32
+                Sleep(100 - giocatore->velocita > 0 ? 100 - giocatore->velocita : 10);
+            #else
+                usleep((100 - giocatore->velocita > 0 ? 100 - giocatore->velocita : 10) * 1000);
+            #endif
+
+        } else {
+            *statoCorrente = GAMEOVER;
         }
     }
 }

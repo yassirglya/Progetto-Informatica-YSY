@@ -1,51 +1,39 @@
 #include "game.h"
-
-// Funzione per una semplice pausa (cross-platform)
-void sleep_ms(int milliseconds) {
-    struct timespec ts;
-    ts.tv_sec = milliseconds / 1000;
-    ts.tv_nsec = (milliseconds % 1000) * 1000000;
-    nanosleep(&ts, NULL);
-}
+#include "player.h"
 
 int main() {
-    const int FPS = 30;
-    const int frameDelay = 1000 / FPS;
+    srand(time(NULL)); // Inizializza il generatore di numeri casuali
 
     StatoGioco statoCorrente = MENU;
     Giocatore giocatore;
 
-    // Inizializza il gioco
-    inizializza_gioco(&giocatore);
-
-    // Loop principale del gioco
-    while (1) {
-        // Gestione degli stati del gioco
+    while (statoCorrente != ESCI) {
         switch (statoCorrente) {
             case MENU:
-                menuPrincipale(&statoCorrente);
+                // menuPrincipale(&statoCorrente);
+                // Per ora, andiamo direttamente al gioco
+                statoCorrente = GIOCO;
                 break;
             case GIOCO:
-                // Logica del gioco
-                aggiorna_logica(&statoCorrente, &giocatore);
-                break;
-            case PAUSA:
-                // Metti in pausa il gioco
+                gameLoop(&statoCorrente, &giocatore);
                 break;
             case GAMEOVER:
-                // Fine del gioco
+                mostraGameOver(&statoCorrente, &giocatore);
                 break;
             case RECORD:
-                // Visualizza i record
+                // Da implementare
+                statoCorrente = MENU;
+                break;
+            case PAUSA:
+                // Gestito all'interno di gestisciInput
+                break;
+            case ESCI:
+                // Il loop terminerà
                 break;
         }
-
-        // Disegna la schermata
-        disegna_schermo(statoCorrente, &giocatore);
-
-        // Controllo del frame rate
-        sleep_ms(frameDelay);
     }
+
+    printf("Grazie per aver giocato!\n");
 
     return 0;
 }
