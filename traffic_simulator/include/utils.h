@@ -11,6 +11,6 @@
 
 // Funzioni di utilità generiche
 int random_int(int min, int max);
-void disegnaSchermo(Giocatore *g, Ostacolo ostacoli[]);
+void disegnaSchermo(Giocatore *g, const Ostacolo ostacoli[]);
 
 #endif // UTILS_H

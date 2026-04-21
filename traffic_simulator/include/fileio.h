@@ -3,12 +3,7 @@
 
 #include "player.h"
 
-// Struttura per rappresentare un record
-typedef struct {
-    int km;
-    char nome[20];
-    int tempo;
-} Record;
+// Struttura per rappresentare un record è già definita in game.h
 
 // Funzioni per la gestione dei file
 void salva_record(const Record *record);

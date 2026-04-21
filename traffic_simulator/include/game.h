@@ -41,6 +41,6 @@ void gestisciInput(Giocatore *giocatore);
 void inizializza_ostacoli();
 void aggiorna_ostacoli();
 const Ostacolo* get_ostacoli();
-void disegnaSchermo(Giocatore *g, Ostacolo ostacoli[]);
+void disegnaSchermo(Giocatore *g, const Ostacolo ostacoli[]);
 
 #endif // GAME_H
