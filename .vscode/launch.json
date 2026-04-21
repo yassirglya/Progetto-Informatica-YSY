@@ -1,7 +1,24 @@
 {
-    // Usare IntelliSense per informazioni sui possibili attributi.
-    // Al passaggio del mouse vengono visualizzate le descrizioni degli attributi esistenti.
-    // Per altre informazioni, visitare: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": []
+    "configurations": [
+        {
+            "name": "Run Traffic Simulator",
+            "type": "gdb",
+            "request": "launch",
+            "program": "${workspaceFolder}/traffic_simulator/traffic_simulator",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/traffic_simulator",
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "make: build"
+        }
+    ]
 }
