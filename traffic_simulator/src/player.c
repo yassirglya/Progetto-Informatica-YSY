@@ -1,5 +1,6 @@
 #include "player.h"
 #include "obstacles.h"
+#include "utils.h"
 #include <stdio.h>
 
 void inizializza_giocatore(Giocatore *g) {

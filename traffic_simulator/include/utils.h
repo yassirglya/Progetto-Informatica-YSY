@@ -9,6 +9,13 @@
 #include "player.h"
 #include "obstacles.h"
 
+#ifdef _WIN32
+#include <conio.h>
+#else
+int _kbhit(void);
+int _getch(void);
+#endif
+
 // Funzioni di utilità generiche
 int random_int(int min, int max);
 void disegnaSchermo(Giocatore *g, const Ostacolo ostacoli[]);

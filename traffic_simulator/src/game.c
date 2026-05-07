@@ -1,5 +1,10 @@
 #include "game.h"
 #include "obstacles.h"
+#include "utils.h"
+
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 // Funzione per la schermata di Game Over
 void mostraGameOver(StatoGioco *statoCorrente, const Giocatore *giocatore) {
